@@ -1,0 +1,12 @@
+groupmembersdocx.pdf
+
+build/
+dist/
+lib/
+nbproject/
+*.class
+build.xml
+*.log
+*.jar
+*.war
+*.ear
