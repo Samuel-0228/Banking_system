@@ -1,14 +1,14 @@
-# ATM Banking System
-#  ATM is the name  we gave it for the bank
-A Java Swing ATM/banking application backed by MySQL via JDBC. Customers can register, create accounts, deposit, withdraw, transfer money between accounts, and view full transaction history.
+# Banking System
+
+A Java Swing banking application backed by MySQL via JDBC. Customers can register, create accounts, deposit, withdraw, transfer money between accounts, and view full transaction history.
 
 ---
 
 ## 1. Technologies
 
-- **Java** 
-- **NetBeans IDE** 
-- **Java Swing** for all GUI 
+- **Java**
+- **NetBeans IDE**
+- **Java Swing** for all GUI
 - **JDBC** (`com.mysql.cj.jdbc.Driver`) for database access
 - **MySQL** running under **XAMPP** (localhost)
 
@@ -17,8 +17,8 @@ A Java Swing ATM/banking application backed by MySQL via JDBC. Customers can reg
 ## 2. Project Layout
 
 ```
-ATMSystem/
-├── src/atmsystem/
+BankingSystem/
+├── src/system/
 │   ├── main/
 │   │   └── Main.java                 ← application entry point
 │   ├── models/
@@ -52,7 +52,7 @@ ATMSystem/
 │       ├── TransferGUI.java
 │       └── TransactionHistoryGUI.java
 ├── database/
-│   └── atm_system.sql                ← MySQL schema
+│   └── banking_system.sql                ← MySQL schema
 ├── lib/
 │   └── (place mysql-connector-j-x.x.x.jar here)
 ├── nbproject/                        ← NetBeans Ant project config
@@ -63,30 +63,24 @@ ATMSystem/
 
 ---
 
-
 ### 3.1 Create the database
--  Open phpMyAdmin at `http://localhost/phpmyadmin/`.
-- then  Choose **Import** → select `database/atm_system.sql` → **Go**.
 
-
-
+- Open phpMyAdmin at `http://localhost/phpmyadmin/`.
+  -- then Choose **Import** → select `database/banking_system.sql` → **Go**.
 
 ### 3.3 Add the MySQL JDBC driver
-1.  **MySQL Connector/J** (Platform Independent) from:
-   https://dev.mysql.com/downloads/connector/j/
-2. Extract the `.jar` (mysql-connector-j-9.7.0)
-3.
-   ```
-   file.reference.mysql-connector=lib/-mysql-connector-j-9.7.0.jar
-   ```
 
+1.  **MySQL Connector/J** (Platform Independent) from:
+    https://dev.mysql.com/downloads/connector/j/
+2.  Extract the `.jar` (mysql-connector-j-9.7.0)
+3.  ```
+    file.reference.mysql-connector=lib/-mysql-connector-j-9.7.0.jar
+    ```
 
 ### 3.4 Run
 
-In NetBeans: **Open Project** → select the `ATMSystem` folder → **Run** 
+In NetBeans: **Open Project** → select the `BankingSystem` folder → **Run**
 If MySQL isn't running or the driver isn't on the classpath, the app shows a clear error dialog at startup.
-
-
 
 ## 4. System Flow (detailed)
 
@@ -115,6 +109,7 @@ If MySQL isn't running or the driver isn't on the classpath, the app shows a cle
    - **Logout** → returns to `LoginGUI`.
 
 Every successful deposit/withdraw/transfer:
+
 - Updates `accounts.balance` in MySQL.
 - Inserts a row into `transactions` (DB).
 - Appends a line to `transactions.log` (file).
@@ -124,37 +119,40 @@ Every successful deposit/withdraw/transfer:
 ## 5. Database Design
 
 ### `customers`
-| Column        | Type         | Notes                          |
-|---------------|--------------|--------------------------------|
-| customer_id   | VARCHAR(10)  | PRIMARY KEY, format `C####`    |
-| first_name    | VARCHAR(50)  | NOT NULL                       |
-| last_name     | VARCHAR(50)  | NOT NULL                       |
-| phone_number  | VARCHAR(20)  | NOT NULL                       |
-| email         | VARCHAR(100) | NOT NULL                       |
-| created_at    | TIMESTAMP    | default `CURRENT_TIMESTAMP`    |
+
+| Column       | Type         | Notes                       |
+| ------------ | ------------ | --------------------------- |
+| customer_id  | VARCHAR(10)  | PRIMARY KEY, format `C####` |
+| first_name   | VARCHAR(50)  | NOT NULL                    |
+| last_name    | VARCHAR(50)  | NOT NULL                    |
+| phone_number | VARCHAR(20)  | NOT NULL                    |
+| email        | VARCHAR(100) | NOT NULL                    |
+| created_at   | TIMESTAMP    | default `CURRENT_TIMESTAMP` |
 
 ### `accounts` (doubles as the login table)
-| Column          | Type           | Notes                                   |
-|-----------------|----------------|-----------------------------------------|
-| account_number  | VARCHAR(15)    | PRIMARY KEY, format `ACC-####`          |
-| customer_id     | VARCHAR(10)    | FK → `customers.customer_id`            |
-| account_type    | VARCHAR(20)    | `Savings`, `Current`, or `Fixed Deposit`|
-| balance         | DECIMAL(15,2)  | NOT NULL, default 0.00                  |
-| password        | VARCHAR(255)   | NOT NULL                                |
-| created_at      | TIMESTAMP      | default `CURRENT_TIMESTAMP`             |
+
+| Column         | Type          | Notes                                    |
+| -------------- | ------------- | ---------------------------------------- |
+| account_number | VARCHAR(15)   | PRIMARY KEY, format `ACC-####`           |
+| customer_id    | VARCHAR(10)   | FK → `customers.customer_id`             |
+| account_type   | VARCHAR(20)   | `Savings`, `Current`, or `Fixed Deposit` |
+| balance        | DECIMAL(15,2) | NOT NULL, default 0.00                   |
+| password       | VARCHAR(255)  | NOT NULL                                 |
+| created_at     | TIMESTAMP     | default `CURRENT_TIMESTAMP`              |
 
 Login uses `account_number` + `password` from this table (per requirement: "log in using Account Number / Password").
 
 ### `transactions`
-| Column            | Type           | Notes                                   |
-|-------------------|----------------|-----------------------------------------|
-| transaction_id    | INT            | PRIMARY KEY, AUTO_INCREMENT             |
-| account_number    | VARCHAR(15)    | FK → `accounts.account_number`          |
-| transaction_type  | VARCHAR(20)    | `DEPOSIT`, `WITHDRAW`, `TRANSFER_OUT`, `TRANSFER_IN` |
-| amount            | DECIMAL(15,2)  | NOT NULL                                |
-| balance_after     | DECIMAL(15,2)  | NOT NULL — snapshot for history view    |
-| target_account    | VARCHAR(15)    | nullable — set for transfers            |
-| transaction_date  | TIMESTAMP      | default `CURRENT_TIMESTAMP`             |
+
+| Column           | Type          | Notes                                                |
+| ---------------- | ------------- | ---------------------------------------------------- |
+| transaction_id   | INT           | PRIMARY KEY, AUTO_INCREMENT                          |
+| account_number   | VARCHAR(15)   | FK → `accounts.account_number`                       |
+| transaction_type | VARCHAR(20)   | `DEPOSIT`, `WITHDRAW`, `TRANSFER_OUT`, `TRANSFER_IN` |
+| amount           | DECIMAL(15,2) | NOT NULL                                             |
+| balance_after    | DECIMAL(15,2) | NOT NULL — snapshot for history view                 |
+| target_account   | VARCHAR(15)   | nullable — set for transfers                         |
+| transaction_date | TIMESTAMP     | default `CURRENT_TIMESTAMP`                          |
 
 A composite index `(account_number, transaction_date DESC)` is created to make per-account history queries fast.
 
@@ -173,14 +171,14 @@ A composite index `(account_number, transaction_date DESC)` is created to make p
 
 ## 7. Exception Handling
 
-| Exception                        | Thrown when…                                            | Caught in                              |
-|----------------------------------|---------------------------------------------------------|----------------------------------------|
-| `InvalidLoginException`          | Empty fields or wrong account/password                  | `LoginGUI.doLogin()`                    |
-| `InvalidAmountException`         | Amount ≤ 0 or non-numeric                               | Deposit/Withdraw/Transfer GUIs          |
-| `InsufficientFundsException`     | Withdraw/transfer exceeds available balance (+overdraft for Current) | Withdraw/Transfer GUIs |
-| `AccountNotFoundException`       | Transfer target account doesn't exist                   | `TransferGUI`                           |
-| `SQLException`                   | Any DB error (connection, query, constraint)            | All GUIs (shown in an error dialog)     |
-| `NumberFormatException`          | User typed a non-number in an amount field              | Deposit/Withdraw/Transfer GUIs          |
+| Exception                    | Thrown when…                                                         | Caught in                           |
+| ---------------------------- | -------------------------------------------------------------------- | ----------------------------------- |
+| `InvalidLoginException`      | Empty fields or wrong account/password                               | `LoginGUI.doLogin()`                |
+| `InvalidAmountException`     | Amount ≤ 0 or non-numeric                                            | Deposit/Withdraw/Transfer GUIs      |
+| `InsufficientFundsException` | Withdraw/transfer exceeds available balance (+overdraft for Current) | Withdraw/Transfer GUIs              |
+| `AccountNotFoundException`   | Transfer target account doesn't exist                                | `TransferGUI`                       |
+| `SQLException`               | Any DB error (connection, query, constraint)                         | All GUIs (shown in an error dialog) |
+| `NumberFormatException`      | User typed a non-number in an amount field                           | Deposit/Withdraw/Transfer GUIs      |
 
 All caught exceptions surface to the user as a `JOptionPane` dialog with a clear message — the app never silently swallows an error.
 
@@ -188,16 +186,16 @@ All caught exceptions surface to the user as a `JOptionPane` dialog with a clear
 
 ## 8. Validation Rules
 
-| Field                  | Rule                                                  |
-|------------------------|-------------------------------------------------------|
-| First/last name        | Non-empty                                             |
-| Phone number           | 7–15 digits, optional leading `+`, dashes/spaces ok   |
-| Email                  | Matches `^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$` |
-| Password               | ≥ 4 characters; confirm-password must match           |
-| Initial balance        | Non-negative number                                   |
-| Deposit / withdraw     | Numeric, > 0                                          |
-| Transfer receiver      | Non-empty, must exist in `accounts`, cannot be self   |
-| Withdraw / transfer    | Amount ≤ balance (Current allows up to $500 overdraft)|
+| Field               | Rule                                                      |
+| ------------------- | --------------------------------------------------------- |
+| First/last name     | Non-empty                                                 |
+| Phone number        | 7–15 digits, optional leading `+`, dashes/spaces ok       |
+| Email               | Matches `^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$` |
+| Password            | ≥ 4 characters; confirm-password must match               |
+| Initial balance     | Non-negative number                                       |
+| Deposit / withdraw  | Numeric, > 0                                              |
+| Transfer receiver   | Non-empty, must exist in `accounts`, cannot be self       |
+| Withdraw / transfer | Amount ≤ balance (Current allows up to $500 overdraft)    |
 
 ---
 
@@ -221,8 +219,6 @@ All caught exceptions surface to the user as a `JOptionPane` dialog with a clear
 - **Reliability** — every DB call is wrapped in try-with-resources; failed calls surface a clear dialog.
 - **Portability** — pure Java 8; runs on Windows / macOS / Linux with the same project.
 
-
 ---
 
-
-"# Banking_system" 
+"# Banking_system"
