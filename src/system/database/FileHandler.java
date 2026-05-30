@@ -16,10 +16,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Handles file operations such as logging and general text/binary file I/O.
+ * Provides utility methods to read and write data to the filesystem.
+ */
 public class FileHandler {
 
     private static final String LOG_FILE = "transactions.log";
 
+    /**
+     * Logs a transaction to a text file.
+     *
+     * @param t The transaction to log.
+     */
     public static void logTransaction(Transaction t) {
         String stamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         String line = String.format("[%s] %s | %s | %.2f | balance=%.2f%s%n",
@@ -36,6 +45,11 @@ public class FileHandler {
         }
     }
 
+    /**
+     * Logs a generic event message to the log file.
+     *
+     * @param message The message to log.
+     */
     public static void logEvent(String message) {
         String stamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         try (BufferedWriter w = new BufferedWriter(new FileWriter(LOG_FILE, true))) {
@@ -45,6 +59,13 @@ public class FileHandler {
         }
     }
 
+    /**
+     * Reads a text file line by line.
+     *
+     * @param path The path of the file to read.
+     * @return A list of strings, each representing a line from the file.
+     * @throws IOException If an I/O error occurs.
+     */
     public static List<String> readTextFile(String path) throws IOException {
         List<String> lines = new ArrayList<>();
         try (InputStream in = new BufferedInputStream(new FileInputStream(path));
@@ -63,6 +84,14 @@ public class FileHandler {
         return lines;
     }
 
+    /**
+     * Writes a list of strings to a text file.
+     *
+     * @param path   The path of the file to write to.
+     * @param lines  The lines of text to write.
+     * @param append True to append to the file, false to overwrite.
+     * @throws IOException If an I/O error occurs.
+     */
     public static void writeTextFile(String path, List<String> lines, boolean append) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(path, append))) {
             for (String line : lines) {
@@ -72,6 +101,13 @@ public class FileHandler {
         }
     }
 
+    /**
+     * Reads the entire contents of a binary file.
+     *
+     * @param path The path of the file to read.
+     * @return A byte array containing the file data.
+     * @throws IOException If an I/O error occurs.
+     */
     public static byte[] readBinaryFile(String path) throws IOException {
         try (InputStream in = new BufferedInputStream(new FileInputStream(path));
                 ByteArrayOutputStream out = new ByteArrayOutputStream()) {
@@ -84,6 +120,14 @@ public class FileHandler {
         }
     }
 
+    /**
+     * Writes a byte array to a binary file.
+     *
+     * @param path   The path of the file to write to.
+     * @param data   The byte array to write.
+     * @param append True to append to the file, false to overwrite.
+     * @throws IOException If an I/O error occurs.
+     */
     public static void writeBinaryFile(String path, byte[] data, boolean append) throws IOException {
         try (OutputStream out = new FileOutputStream(path, append)) {
             out.write(data);

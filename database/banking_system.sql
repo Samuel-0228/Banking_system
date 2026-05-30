@@ -21,6 +21,7 @@ CREATE TABLE accounts (
     account_number VARCHAR(15) PRIMARY KEY,
     customer_id VARCHAR(10) NOT NULL,
     account_type VARCHAR(20) NOT NULL,
+    branch_name VARCHAR(100) NOT NULL,
     balance DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
     loan_balance DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
     password VARCHAR(255) NOT NULL,

@@ -8,8 +8,16 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+/**
+ * The main entry point for the banking system application.
+ * Initializes the database connection, preloads bank data, and launches the graphical user interface.
+ */
 public class Main {
-
+    /**
+     * The main method that starts the application.
+     *
+     * @param args Command line arguments (not used).
+     */
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

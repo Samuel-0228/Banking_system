@@ -28,6 +28,7 @@ public class AccountCreationGUI extends JFrame {
     private final Customer customer;
     private final JTextField accountNumberField;
     private final JComboBox<String> accountTypeBox;
+    private final JComboBox<String> branchBox;
     private final JTextField initialBalanceField;
     private final PasswordInput passwordInput;
     private final PasswordInput confirmPasswordInput;
@@ -62,15 +63,19 @@ public class AccountCreationGUI extends JFrame {
         accountTypeBox = new JComboBox<>(new String[] { "Savings", "Current", "Fixed Deposit" });
         accountTypeBox.setFont(Theme.FONT_FIELD);
 
+        branchBox = new JComboBox<>(new String[] { "5 Kilo", "Piazza", "Bole", "Arat Kilo", "Mexico" });
+        branchBox.setFont(Theme.FONT_FIELD);
+
         initialBalanceField = Theme.textField();
         passwordInput = new PasswordInput();
         confirmPasswordInput = new PasswordInput();
 
         addRow(form, gc, 0, "Account Number:", accountNumberField);
         addRow(form, gc, 1, "Account Type:", accountTypeBox);
-        addRow(form, gc, 2, "Initial Balance (" + Theme.CURRENCY + ", min 100):", initialBalanceField);
-        addRow(form, gc, 3, "Password:", passwordInput);
-        addRow(form, gc, 4, "Confirm Password:", confirmPasswordInput);
+        addRow(form, gc, 2, "Branch:", branchBox);
+        addRow(form, gc, 3, "Initial Balance (" + Theme.CURRENCY + ", min 100):", initialBalanceField);
+        addRow(form, gc, 4, "Password:", passwordInput);
+        addRow(form, gc, 5, "Confirm Password:", confirmPasswordInput);
 
         JButton create = Theme.primaryButton("CREATE ACCOUNT");
         JButton back = Theme.secondaryButton("BACK");
@@ -80,7 +85,7 @@ public class AccountCreationGUI extends JFrame {
         buttons.add(back);
 
         gc.gridx = 0;
-        gc.gridy = 5;
+        gc.gridy = 6;
         gc.gridwidth = 2;
         gc.anchor = GridBagConstraints.CENTER;
         form.add(buttons, gc);
@@ -124,6 +129,7 @@ public class AccountCreationGUI extends JFrame {
     private void createAccount() {
         String accountNumber = accountNumberField.getText();
         String type = (String) accountTypeBox.getSelectedItem();
+        String branch = (String) branchBox.getSelectedItem();
         String balanceStr = initialBalanceField.getText().trim();
         String password = passwordInput.getText();
         String confirm = confirmPasswordInput.getText();
@@ -160,12 +166,13 @@ public class AccountCreationGUI extends JFrame {
         }
 
         try {
-            Account account = Bank.createAccount(type, accountNumber, customer.getCustomerId(), balance, password);
+            Account account = Bank.createAccount(type, accountNumber, customer.getCustomerId(), branch, balance, password);
             DatabaseHandler.saveAccount(account);
             FileHandler.logEvent("ACCOUNT_CREATED " + accountNumber + " (" + type + ")");
             JOptionPane.showMessageDialog(this,
                     "Account Successfully Created!\n\nAccount Number: " + accountNumber
                             + "\nType: " + type
+                            + "\nBranch: " + branch
                             + "\nInitial Balance: " + Theme.money(balance),
                     "Success", JOptionPane.INFORMATION_MESSAGE);
             new LoginGUI().setVisible(true);
